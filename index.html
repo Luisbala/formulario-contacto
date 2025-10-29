@@ -3,210 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulario de Contacto</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
+  <title>Formulario conectado a Google Sheets</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-
     body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1500&q=80') 
-                  no-repeat center center/cover;
-      overflow: hidden;
-    }
-
-    body::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(4px);
-      z-index: 0;
-    }
-
-    .form-box {
-      position: relative;
-      z-index: 1;
-      width: 380px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 20px;
-      backdrop-filter: blur(15px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      padding: 2rem 2.5rem;
-      color: #fff;
-      animation: fadeIn 1s ease;
-    }
-
-    .form-box h2 {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      padding: 20px;
       text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 1.2rem;
-      font-weight: 600;
-      letter-spacing: 1px;
     }
-
-    .input-group {
-      position: relative;
-      margin-bottom: 1.6rem;
-    }
-
-    .input-group input, 
-    .input-group textarea {
-      width: 100%;
-      padding: 12px 40px 12px 12px;
-      font-size: 1rem;
-      border: none;
-      outline: none;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-      transition: 0.3s ease;
-    }
-
-    .input-group input::placeholder,
-    .input-group textarea::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .input-group input:focus,
-    .input-group textarea:focus {
-      background: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-    }
-
-    .input-group i {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(90deg, #4f46e5, #06b6d4);
-      border: none;
+    form {
+      background: white;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
       border-radius: 10px;
-      color: #fff;
-      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background: #007BFF;
+      color: white;
+      border: none;
       cursor: pointer;
-      transition: all 0.3s ease;
     }
-
     button:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(90deg, #06b6d4, #4f46e5);
-      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
-    }
-
-    .message {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 0.9rem;
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .message.success { color: #00e676; }
-    .message.error { color: #ff5252; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      background: #0056b3;
     }
   </style>
 </head>
-
 <body>
-  <div class="form-box">
-    <h2>Contáctame</h2>
-    <form id="contact-form">
-      <div class="input-group">
-        <input type="text" id="name" name="name" placeholder="Tu nombre" required>
-        <i>👤</i>
-      </div>
 
-      <div class="input-group">
-        <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
-        <i>✉️</i>
-      </div>
+  <h2>Formulario de contacto</h2>
 
-      <div class="input-group">
-        <textarea id="message" name="message" rows="3" placeholder="Tu mensaje..." required></textarea>
-        <i>💬</i>
-      </div>
+  <form id="miFormulario">
+    <input type="text" name="nombre" placeholder="Tu nombre" required />
+    <input type="email" name="email" placeholder="Tu correo" required />
+    <textarea name="mensaje" placeholder="Tu mensaje" required></textarea>
+    <button type="submit">Enviar</button>
+  </form>
 
-      <button type="submit" id="submit-btn">Enviar mensaje</button>
-    </form>
-
-    <div id="status-message" class="message"></div>
-  </div>
+  <p id="respuesta"></p>
 
   <script>
-    const TOKEN = "84ce04d0-0a0e-44a9-afe9-5c77111399b7"; 
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbybBcz0vfNzG0F5ztrY5MDjgl7r8zhMA9T7coOh2RHEsSetErehGggSZXi3hQGN3dmw/exec";
-    const PROXY = "https://corsproxy.io/?"; // 🔒 Proxy para evitar errores CORS
+    const scriptURL = "https://script.google.com/macros/s/AKfycbybBcz0vfNzG0F5ztrY5MDjgl7r8zhMA9T7coOh2RHEsSetErehGggSZXi3hQGN3dmw/exec";
+    const workerURL = "https://wispy-sunset-a77b.nacholuba66.workers.dev/";
 
-    const form = document.getElementById("contact-form");
-    const statusMessage = document.getElementById("status-message");
-    const submitBtn = document.getElementById("submit-btn");
+    const form = document.getElementById("miFormulario");
+    const respuesta = document.getElementById("respuesta");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Enviando...";
-      statusMessage.style.display = "none";
+      respuesta.textContent = "Enviando datos...";
 
       const formData = new FormData(form);
-      formData.append("token", TOKEN);
+      const params = new URLSearchParams();
+      for (const [key, value] of formData.entries()) {
+        params.append(key, value);
+      }
 
       try {
-        const response = await fetch(PROXY + ENDPOINT, {
+        const res = await fetch(`${workerURL}?url=${encodeURIComponent(scriptURL)}`, {
           method: "POST",
-          body: formData
+          body: params,
         });
-
-        const resultText = await response.text();
-        console.log("Respuesta del servidor:", resultText);
-
-        let result;
-        try {
-          result = JSON.parse(resultText);
-        } catch {
-          result = { success: true }; // si no puede leer, asumimos éxito
-        }
-
-        if (result.success) {
-          statusMessage.textContent = "✅ ¡Mensaje enviado correctamente!";
-          statusMessage.className = "message success";
-          statusMessage.style.display = "block";
-          form.reset();
-        } else {
-          statusMessage.textContent = "⚠️ " + (result.message || "Error al enviar.");
-          statusMessage.className = "message error";
-          statusMessage.style.display = "block";
-        }
-
-      } catch (error) {
-        console.error("Error al enviar:", error);
-        statusMessage.textContent = "❌ Ocurrió un error al enviar el mensaje.";
-        statusMessage.className = "message error";
-        statusMessage.style.display = "block";
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Enviar mensaje";
+        const text = await res.text();
+        respuesta.textContent = "✅ Datos enviados correctamente.";
+        form.reset();
+      } catch (err) {
+        respuesta.textContent = "❌ Error al enviar datos.";
+        console.error(err);
       }
     });
   </script>

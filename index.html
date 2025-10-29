@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulario de Contacto Profesional</title>
+  <title>Formulario de Contacto</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
@@ -19,12 +19,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1500&q=80') 
+      background: url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1500&q=80')
                   no-repeat center center/cover;
       overflow: hidden;
     }
 
-    /* ===== Overlay oscuro ===== */
     body::before {
       content: "";
       position: absolute;
@@ -34,7 +33,6 @@
       z-index: 0;
     }
 
-    /* ===== Contenedor del formulario ===== */
     .form-box {
       position: relative;
       z-index: 1;
@@ -57,13 +55,12 @@
       letter-spacing: 1px;
     }
 
-    /* ===== Inputs animados ===== */
     .input-group {
       position: relative;
       margin-bottom: 1.6rem;
     }
 
-    .input-group input, 
+    .input-group input,
     .input-group textarea {
       width: 100%;
       padding: 12px 40px 12px 12px;
@@ -87,7 +84,6 @@
       box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
     }
 
-    /* Íconos dentro del input */
     .input-group i {
       position: absolute;
       right: 12px;
@@ -96,7 +92,6 @@
       color: rgba(255, 255, 255, 0.8);
     }
 
-    /* ===== Botón ===== */
     button {
       width: 100%;
       padding: 12px;
@@ -115,7 +110,6 @@
       box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
     }
 
-    /* ===== Mensaje ===== */
     .message {
       text-align: center;
       margin-top: 12px;
@@ -172,31 +166,34 @@
       statusMessage.style.display = "none";
 
       const formData = new FormData(form);
+      formData.append("token", "84ce04d0-0a0e-44a9-afe9-5c77111399b7"); // 🔒 tu token secreto
 
       try {
-        await fetch('https://script.google.com/macros/s/AKfycbyG-iV8_1P5n_-FYcRNLLfH13mAbyMsLYTa-1-LFOX7_YLGvErmI_s_np-utmAxfR1QtQ/exec', {
-          method: 'POST',
-          mode: 'no-cors',
+        const response = await fetch("https://script.google.com/macros/s/AKfycbwyJ8j7w_83SdM4iRt3is_oJ6mdgnFJKtoD4IFfdJGc5o4oyWQaj5dc66kkgmgdclOFYg/exec", {
+          method: "POST",
           body: formData
         });
 
-        statusMessage.textContent = "✅ ¡Mensaje enviado correctamente!";
-        statusMessage.className = "message success";
-        statusMessage.style.display = "block";
-        form.reset();
+        const result = await response.json();
 
-        setTimeout(() => {
-          statusMessage.style.display = "none";
-        }, 5000);
+        if (result.success) {
+          statusMessage.textContent = "✅ " + result.message;
+          statusMessage.className = "message success";
+          form.reset();
+        } else {
+          statusMessage.textContent = "❌ " + result.message;
+          statusMessage.className = "message error";
+        }
 
       } catch (error) {
         console.error("Error:", error);
-        statusMessage.textContent = "❌ Ocurrió un error. Intenta de nuevo.";
+        statusMessage.textContent = "❌ Ocurrió un error al enviar el mensaje.";
         statusMessage.className = "message error";
-        statusMessage.style.display = "block";
       } finally {
+        statusMessage.style.display = "block";
         submitBtn.disabled = false;
         submitBtn.textContent = "Enviar mensaje";
+        setTimeout(() => statusMessage.style.display = "none", 6000);
       }
     });
   </script>

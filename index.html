@@ -3,82 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulario conectado a Google Sheets</title>
+  <title>Formulario de Contacto Seguro</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f9fafb;
-      padding: 20px;
-      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
     form {
       background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 100%;
       max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #111827;
     }
     input, textarea, button {
       width: 100%;
+      padding: 12px;
       margin: 10px 0;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
     }
     button {
-      background: #007BFF;
+      background: #2563eb;
       color: white;
       border: none;
       cursor: pointer;
+      transition: 0.3s;
     }
     button:hover {
-      background: #0056b3;
+      background: #1e40af;
+    }
+    #mensaje {
+      text-align: center;
+      font-weight: 500;
+      margin-top: 15px;
     }
   </style>
 </head>
+
 <body>
-
-  <h2>Formulario de contacto</h2>
-
-  <form id="miFormulario">
-    <input type="text" name="nombre" placeholder="Tu nombre" required />
-    <input type="email" name="email" placeholder="Tu correo" required />
-    <textarea name="mensaje" placeholder="Tu mensaje" required></textarea>
-    <button type="submit">Enviar</button>
+  <form id="contact-form">
+    <h2>Contáctame</h2>
+    <input type="text" name="name" placeholder="Tu nombre" required />
+    <input type="email" name="email" placeholder="Tu correo electrónico" required />
+    <textarea name="message" rows="4" placeholder="Tu mensaje..." required></textarea>
+    <button type="submit">Enviar mensaje</button>
+    <div id="mensaje"></div>
   </form>
 
-  <p id="respuesta"></p>
-
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbybBcz0vfNzG0F5ztrY5MDjgl7r8zhMA9T7coOh2RHEsSetErehGggSZXi3hQGN3dmw/exec";
-    const workerURL = "https://wispy-sunset-a77b.nacholuba66.workers.dev/";
+    // === CONFIGURACIÓN ===
+    const WORKER_URL = "https://wispy-sunset-a77b.nacholuba66.workers.dev/";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzK66O5oAZH3jzu0Mfcrwlk4KbKtPxTqH5j4K-acVcdRtnhtDWZW9ntS-aBMmV_NSTapw/exec";
 
-    const form = document.getElementById("miFormulario");
-    const respuesta = document.getElementById("respuesta");
+    const form = document.getElementById("contact-form");
+    const mensaje = document.getElementById("mensaje");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      respuesta.textContent = "Enviando datos...";
-
+      mensaje.textContent = "⏳ Enviando...";
+      mensaje.style.color = "#555";
+      
       const formData = new FormData(form);
-      const params = new URLSearchParams();
-      for (const [key, value] of formData.entries()) {
-        params.append(key, value);
-      }
+      const data = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        message: formData.get("message")
+      };
 
       try {
-        const res = await fetch(`${workerURL}?url=${encodeURIComponent(scriptURL)}`, {
+        const res = await fetch(`${WORKER_URL}?url=${encodeURIComponent(SCRIPT_URL)}`, {
           method: "POST",
-          body: params,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
         });
+
+        if (!res.ok) throw new Error("Error de red");
         const text = await res.text();
-        respuesta.textContent = "✅ Datos enviados correctamente.";
-        form.reset();
+
+        // Intenta leer respuesta JSON
+        try {
+          const result = JSON.parse(text);
+          if (result.success) {
+            mensaje.textContent = "✅ Mensaje enviado correctamente.";
+            mensaje.style.color = "green";
+            form.reset();
+          } else {
+            mensaje.textContent = "⚠️ Hubo un error: " + (result.message || "Error desconocido");
+            mensaje.style.color = "red";
+          }
+        } catch {
+          mensaje.textContent = "✅ Mensaje enviado correctamente.";
+          mensaje.style.color = "green";
+          form.reset();
+        }
+
       } catch (err) {
-        respuesta.textContent = "❌ Error al enviar datos.";
-        console.error(err);
+        console.error("Error al enviar:", err);
+        mensaje.textContent = "❌ Error al enviar el mensaje.";
+        mensaje.style.color = "red";
       }
     });
   </script>

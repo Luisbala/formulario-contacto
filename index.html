@@ -4,12 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Contacto</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div class="contact-form">
+    <div class="form-container">
         <h2>Formulario de Contacto</h2>
-        <form action="enviar_formulario.php" method="post">
+        <form id="contact-form">
             <label for="name">Nombre:</label>
             <input type="text" id="name" name="name" required>
 
@@ -22,6 +57,22 @@
             <button type="submit">Enviar</button>
         </form>
     </div>
+
+    <script>
+        const form = document.getElementById('contact-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Evitar que se recargue la página
+
+            const formData = new FormData(form);
+
+            fetch('https://script.google.com/macros/s/AKfycbx1_BijYiYiA2ARNXgVtFWeenfQxe05WPnY5cy9xv5A9xpqQg4x7UOz3Z3yZrAIqN-S/exec', {  // Sustituye "TU_URL_DE_WEB_APP" por la URL que obtuviste
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => alert('¡Gracias por tu mensaje!'))
+            .catch(error => alert('Hubo un error, por favor intenta de nuevo.'));
+        });
+    </script>
 </body>
 </html>
-

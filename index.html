@@ -3,117 +3,205 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formulario de Contacto Seguro</title>
+  <title>Formulario de Contacto Profesional</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       font-family: 'Poppins', sans-serif;
-      background: #f3f4f6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+    }
+
+    body {
       margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1500&q=80') 
+                  no-repeat center center/cover;
+      overflow: hidden;
     }
-    form {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 0;
     }
-    h2 {
+
+    .form-box {
+      position: relative;
+      z-index: 1;
+      width: 380px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      padding: 2rem 2.5rem;
+      color: #fff;
+      animation: fadeIn 1s ease;
+    }
+
+    .form-box h2 {
       text-align: center;
-      color: #111827;
+      font-size: 1.8rem;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
     }
-    input, textarea, button {
+
+    .input-group {
+      position: relative;
+      margin-bottom: 1.6rem;
+    }
+
+    .input-group input, 
+    .input-group textarea {
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      font-size: 1rem;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      transition: 0.3s ease;
+    }
+
+    .input-group input::placeholder,
+    .input-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .input-group input:focus,
+    .input-group textarea:focus {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+
+    .input-group i {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    button {
       width: 100%;
       padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-    button {
-      background: #2563eb;
-      color: white;
+      background: linear-gradient(90deg, #4f46e5, #06b6d4);
       border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 600;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s ease;
     }
+
     button:hover {
-      background: #1e40af;
+      transform: translateY(-2px);
+      background: linear-gradient(90deg, #06b6d4, #4f46e5);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
     }
-    #mensaje {
+
+    .message {
       text-align: center;
-      font-weight: 500;
-      margin-top: 15px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .message.success { color: #00e676; }
+    .message.error { color: #ff5252; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 
 <body>
-  <form id="contact-form">
+  <div class="form-box">
     <h2>Contáctame</h2>
-    <input type="text" name="name" placeholder="Tu nombre" required />
-    <input type="email" name="email" placeholder="Tu correo electrónico" required />
-    <textarea name="message" rows="4" placeholder="Tu mensaje..." required></textarea>
-    <button type="submit">Enviar mensaje</button>
-    <div id="mensaje"></div>
-  </form>
+    <form id="contact-form">
+      <div class="input-group">
+        <input type="text" id="name" name="name" placeholder="Tu nombre" required>
+        <i>👤</i>
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
+        <i>✉️</i>
+      </div>
+
+      <div class="input-group">
+        <textarea id="message" name="message" rows="3" placeholder="Tu mensaje..." required></textarea>
+        <i>💬</i>
+      </div>
+
+      <button type="submit" id="submit-btn">Enviar mensaje</button>
+    </form>
+
+    <div id="status-message" class="message"></div>
+  </div>
 
   <script>
-    // === CONFIGURACIÓN ===
-    const WORKER_URL = "https://wispy-sunset-a77b.nacholuba66.workers.dev/";
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRUbGGQj-rTIR80XYRrITe9MXj7nUUNlpUWGjyHfTjKGwPnwwnRzaGKSBn7SOeVIpe/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzK66O5oAZH3jzu0Mfcrwlk4KbKtPxTqH5j4K-acVcdRtnhtDWZW9ntS-aBMmV_NSTapw/exec"; // 🔗 tu URL de Apps Script
 
-    const form = document.getElementById("contact-form");
-    const mensaje = document.getElementById("mensaje");
+    const form = document.getElementById('contact-form');
+    const statusMessage = document.getElementById('status-message');
+    const submitBtn = document.getElementById('submit-btn');
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      mensaje.textContent = "⏳ Enviando...";
-      mensaje.style.color = "#555";
-      
-      const formData = new FormData(form);
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Enviando...";
+      statusMessage.style.display = "none";
+
       const data = {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        message: formData.get("message")
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        message: form.message.value.trim()
       };
 
       try {
-        const res = await fetch(`${WORKER_URL}?url=${encodeURIComponent(SCRIPT_URL)}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
 
-        if (!res.ok) throw new Error("Error de red");
-        const text = await res.text();
+        const result = await response.json();
 
-        // Intenta leer respuesta JSON
-        try {
-          const result = JSON.parse(text);
-          if (result.success) {
-            mensaje.textContent = "✅ Mensaje enviado correctamente.";
-            mensaje.style.color = "green";
-            form.reset();
-          } else {
-            mensaje.textContent = "⚠️ Hubo un error: " + (result.message || "Error desconocido");
-            mensaje.style.color = "red";
-          }
-        } catch {
-          mensaje.textContent = "✅ Mensaje enviado correctamente.";
-          mensaje.style.color = "green";
+        if (result.success) {
+          statusMessage.textContent = "✅ ¡Mensaje enviado correctamente!";
+          statusMessage.className = "message success";
           form.reset();
+        } else {
+          statusMessage.textContent = "❌ " + (result.message || "Error al enviar el mensaje.");
+          statusMessage.className = "message error";
         }
 
-      } catch (err) {
-        console.error("Error al enviar:", err);
-        mensaje.textContent = "❌ Error al enviar el mensaje.";
-        mensaje.style.color = "red";
+      } catch (error) {
+        console.error("Error al enviar:", error);
+        statusMessage.textContent = "❌ Error de conexión o CORS.";
+        statusMessage.className = "message error";
       }
+
+      statusMessage.style.display = "block";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Enviar mensaje";
+
+      setTimeout(() => {
+        statusMessage.style.display = "none";
+      }, 5000);
     });
   </script>
 </body>

@@ -19,7 +19,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1500&q=80')
+      background: url('https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1500&q=80') 
                   no-repeat center center/cover;
       overflow: hidden;
     }
@@ -60,7 +60,7 @@
       margin-bottom: 1.6rem;
     }
 
-    .input-group input,
+    .input-group input, 
     .input-group textarea {
       width: 100%;
       padding: 12px 40px 12px 12px;
@@ -154,46 +154,61 @@
   </div>
 
   <script>
-    const form = document.getElementById('contact-form');
-    const statusMessage = document.getElementById('status-message');
-    const submitBtn = document.getElementById('submit-btn');
+    // ==========================
+    // CONFIGURACIÓN
+    // ==========================
+    const TOKEN = "84ce04d0-0a0e-44a9-afe9-5c77111399b7"; 
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbyG-iV8_1P5n_-FYcRNLLfH13mAbyMsLYTa-1-LFOX7_YLGvErmI_s_np-utmAxfR1QtQ/exec";
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
+    const form = document.getElementById("contact-form");
+    const statusMessage = document.getElementById("status-message");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
       submitBtn.disabled = true;
       submitBtn.textContent = "Enviando...";
       statusMessage.style.display = "none";
 
       const formData = new FormData(form);
-      formData.append("token", "84ce04d0-0a0e-44a9-afe9-5c77111399b7"); // 🔒 tu token secreto
+      formData.append("token", TOKEN);
 
       try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbwyJ8j7w_83SdM4iRt3is_oJ6mdgnFJKtoD4IFfdJGc5o4oyWQaj5dc66kkgmgdclOFYg/exec", {
+        const response = await fetch(ENDPOINT, {
           method: "POST",
-          body: formData
+          body: formData,
         });
 
-        const result = await response.json();
+        const resultText = await response.text();
+        console.log("Respuesta del servidor:", resultText);
+
+        let result;
+        try {
+          result = JSON.parse(resultText);
+        } catch {
+          throw new Error("Respuesta no válida del servidor");
+        }
 
         if (result.success) {
-          statusMessage.textContent = "✅ " + result.message;
+          statusMessage.textContent = "✅ ¡Mensaje enviado correctamente!";
           statusMessage.className = "message success";
+          statusMessage.style.display = "block";
           form.reset();
         } else {
-          statusMessage.textContent = "❌ " + result.message;
+          statusMessage.textContent = "⚠️ " + (result.message || "Error al enviar.");
           statusMessage.className = "message error";
+          statusMessage.style.display = "block";
         }
 
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error al enviar:", error);
         statusMessage.textContent = "❌ Ocurrió un error al enviar el mensaje.";
         statusMessage.className = "message error";
-      } finally {
         statusMessage.style.display = "block";
+      } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "Enviar mensaje";
-        setTimeout(() => statusMessage.style.display = "none", 6000);
       }
     });
   </script>

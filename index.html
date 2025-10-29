@@ -1,27 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulario de Contacto</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
       background-color: #f4f4f9;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
     .form-container {
-      background-color: white;
+      background: #fff;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
       max-width: 400px;
+      width: 100%;
     }
     input, textarea, button {
       width: 100%;
@@ -63,26 +62,22 @@
   <script>
     const form = document.getElementById('contact-form');
 
-    form.addEventListener('submit', function(event) {
-      event.preventDefault(); // Evita que se recargue la página
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
 
       const formData = new FormData(form);
 
       fetch('https://script.google.com/macros/s/AKfycbyG-iV8_1P5n_-FYcRNLLfH13mAbyMsLYTa-1-LFOX7_YLGvErmI_s_np-utmAxfR1QtQ/exec', {
         method: 'POST',
+        mode: 'no-cors', // ⚠️ Ignora CORS
         body: formData
       })
-      .then(response => response.json()) // Esperamos JSON desde Apps Script
-      .then(data => {
-        if (data.result === 'success') {
-          alert('¡Gracias por tu mensaje!');
-          form.reset(); // Limpia el formulario
-        } else {
-          alert('Hubo un error en el servidor. Intenta de nuevo.');
-        }
+      .then(() => {
+        alert('¡Gracias por tu mensaje!');
+        form.reset();
       })
-      .catch(error => {
-        console.error('Error de conexión:', error);
+      .catch((error) => {
+        console.error('Error:', error);
         alert('Hubo un error de conexión. Intenta de nuevo.');
       });
     });

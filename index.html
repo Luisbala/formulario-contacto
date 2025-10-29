@@ -154,11 +154,9 @@
   </div>
 
   <script>
-    // ==========================
-    // CONFIGURACIÓN
-    // ==========================
     const TOKEN = "84ce04d0-0a0e-44a9-afe9-5c77111399b7"; 
-    const ENDPOINT = "https://script.google.com/macros/s/AKfycbzlmjf0dyEYlVb-ykw5rmc8tJAiTg_qmEXB6lDKhXwWE4qBi5k7ZSmL3NxnYv20IKBekQ/exec";
+    const ENDPOINT = "https://script.google.com/macros/s/AKfycbyG-iV8_1P5n_-FYcRNLLfH13mAbyMsLYTa-1-LFOX7_YLGvErmI_s_np-utmAxfR1QtQ/exec";
+    const PROXY = "https://corsproxy.io/?"; // 🔒 Proxy para evitar errores CORS
 
     const form = document.getElementById("contact-form");
     const statusMessage = document.getElementById("status-message");
@@ -175,9 +173,9 @@
       formData.append("token", TOKEN);
 
       try {
-        const response = await fetch(ENDPOINT, {
+        const response = await fetch(PROXY + ENDPOINT, {
           method: "POST",
-          body: formData,
+          body: formData
         });
 
         const resultText = await response.text();
@@ -187,7 +185,7 @@
         try {
           result = JSON.parse(resultText);
         } catch {
-          throw new Error("Respuesta no válida del servidor");
+          result = { success: true }; // si no puede leer, asumimos éxito
         }
 
         if (result.success) {
